@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Search</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .video-card iframe {
+            width: 100%;  /* Responsive width */
+            border: none;  /* Remove default border */
+        }
+        .video-card {
+            margin-bottom: 20px;  /* Space between cards */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-5">Search YouTube Videos</h1>
+        <div class="row justify-content-center mt-5">
+            <div class="col-12 col-md-8">
+                <input type="text" id="searchQuery" class="form-control" placeholder="Enter search keyword">
+            </div>
+            <div class="col-12 col-md-4 mt-2 mt-md-0">
+                <button onclick="fetchVideos()" class="btn btn-primary btn-block">Search</button>
+            </div>
+        </div>
+        <div id="videoContainer" class="row mt-4"></div>
+        <div class="row">
+            <div class="col-12 text-center">
+                <button id="loadMore" class="btn btn-secondary mt-4">Load More</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentVideos = [];
+        let currentIndex = 0;
+        const videosPerPage = 9;
+
+        function fetchVideos() {
+            const query = document.getElementById('searchQuery').value;
+            fetch(`/api/search?keyword=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    currentVideos = data;
+                    currentIndex = 0;
+                    displayVideos();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function displayVideos() {
+            const container = document.getElementById('videoContainer');
+            const maxIndex = currentIndex + videosPerPage;
+            for (let i = currentIndex; i < maxIndex && i < currentVideos.length; i++) {
+                const video = currentVideos[i];
+                const colDiv = document.createElement('div');
+                colDiv.className = 'col-sm-12 col-md-6 col-lg-4 mb-4';
+
+                const card = document.createElement('div');
+                card.className = 'card video-card';
+
+                const iframe = document.createElement('iframe');
+                iframe.setAttribute('src', `https://www.youtube.com/embed/${video.url.split('v=')[1]}`);
+                iframe.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
+                iframe.setAttribute('allowfullscreen', 'true');
+                iframe.height = "250";  // Fixed height for uniformity
+
+                card.appendChild(iframe);
+                colDiv.appendChild(card);
+                container.appendChild(colDiv);
+            }
+            currentIndex += videosPerPage;
+            if (currentIndex >= currentVideos.length) {
+                document.getElementById('loadMore').style.display = 'none';
+            } else {
+                document.getElementById('loadMore').style.display = 'inline-block';
+            }
+        }
+
+        document.getElementById('loadMore').addEventListener('click', displayVideos);
+
+        // Initially hide the load more button
+        document.getElementById('loadMore').style.display = 'none';
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
