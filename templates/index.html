@@ -3,90 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Video Search</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .video-card iframe {
-            width: 100%;  /* Responsive width */
-            border: none;  /* Remove default border */
-        }
-        .video-card {
-            margin-bottom: 20px;  /* Space between cards */
-        }
-    </style>
+    <title>Video and Article Search</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center mt-5">Search YouTube Videos</h1>
-        <div class="row justify-content-center mt-5">
-            <div class="col-12 col-md-8">
-                <input type="text" id="searchQuery" class="form-control" placeholder="Enter search keyword">
-            </div>
-            <div class="col-12 col-md-4 mt-2 mt-md-0">
-                <button onclick="fetchVideos()" class="btn btn-primary btn-block">Search</button>
+    <div class="container mt-3">
+        <h1 class="text-center mb-4">Search for Videos and Articles</h1>
+        <form method="POST" class="input-group mb-4">
+            <input type="text" name="keyword" class="form-control" placeholder="Enter keyword..." value="{{ keyword }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <!-- Video Results -->
+        <div class="mb-5">
+            <h2>Videos</h2>
+            <div class="row">
+                {% for video in videos %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{{ video.url.split('=')[1] }}" allowfullscreen style="width: 100%; height: 200px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
-        <div id="videoContainer" class="row mt-4"></div>
-        <div class="row">
-            <div class="col-12 text-center">
-                <button id="loadMore" class="btn btn-secondary mt-4">Load More</button>
+
+        <!-- Article Results -->
+        <div>
+            <h2>Articles</h2>
+            <div class="row">
+                {% for article in articles %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text">{{ article.description | truncate(150) }}</p>
+                            <a href="{{ article.url }}" target="_blank" class="btn btn-link">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-
-    <script>
-        let currentVideos = [];
-        let currentIndex = 0;
-        const videosPerPage = 9;
-
-        function fetchVideos() {
-            const query = document.getElementById('searchQuery').value;
-            fetch(`/api/search?keyword=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    currentVideos = data;
-                    currentIndex = 0;
-                    displayVideos();
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        function displayVideos() {
-            const container = document.getElementById('videoContainer');
-            const maxIndex = currentIndex + videosPerPage;
-            for (let i = currentIndex; i < maxIndex && i < currentVideos.length; i++) {
-                const video = currentVideos[i];
-                const colDiv = document.createElement('div');
-                colDiv.className = 'col-sm-12 col-md-6 col-lg-4 mb-4';
-
-                const card = document.createElement('div');
-                card.className = 'card video-card';
-
-                const iframe = document.createElement('iframe');
-                iframe.setAttribute('src', `https://www.youtube.com/embed/${video.url.split('v=')[1]}`);
-                iframe.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
-                iframe.setAttribute('allowfullscreen', 'true');
-                iframe.height = "250";  // Fixed height for uniformity
-
-                card.appendChild(iframe);
-                colDiv.appendChild(card);
-                container.appendChild(colDiv);
-            }
-            currentIndex += videosPerPage;
-            if (currentIndex >= currentVideos.length) {
-                document.getElementById('loadMore').style.display = 'none';
-            } else {
-                document.getElementById('loadMore').style.display = 'inline-block';
-            }
-        }
-
-        document.getElementById('loadMore').addEventListener('click', displayVideos);
-
-        // Initially hide the load more button
-        document.getElementById('loadMore').style.display = 'none';
-    </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
