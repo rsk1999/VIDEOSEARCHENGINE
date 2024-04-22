@@ -1,75 +1,155 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background: #f4f4f9;
-    margin: 0;
-    padding: 0;
-    color: #333;
-}
-
-header {
-    background-color: #007bff;
-    color: white;
-    padding: 20px 0;
-}
-
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 0px 0px 0px 0px;
-    margin: 125px 0px 0px;
-    position: static;
-    bottom: 0px;
-    width: 100%;
+body, h1, h2, h3, h4, h5, h6, p, a, button {
+    font-family: 'Poppins', sans-serif;
 }
 
 .navbar-brand {
-    font-weight: bold;
+    font-weight: 600;
 }
+
+.nav-link.active {
+    font-weight: 600;
+    color: #ffd700 !important; 
+}
+
+footer {
+    background-color: #111;
+    color: #ddd;
+    padding: 20px 0;
+}
+
+.social-icons a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.social-icons a:hover {
+    color: #ffd700;
+}
+
+
+
+.nav-link {
+    color: #fff !important;
+}
+
+.card {
+    transition: transform .2s;
+}
+
+.card:hover {
+    transform: scale(1.03); 
+}
+
 
 .container {
-    padding-top: 20px;
+    max-width: 1200px;  
 }
 
-.search-container form {
-    margin-bottom: 20px;
-}
-
-.list-group-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.form-check-input {
-    margin-right: 10px;
-}
-
-.btn-outline-secondary {
-    color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-outline-secondary:hover {
-    background: #007bff;
-    color: #fff;
-}
-
-.btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
+.card {
+    transition: box-shadow .3s ease-in-out;  
+    border-radius: 0.75rem; 
 }
 
 .card-body {
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+}
+
+.btn-outline-primary {
+    width: 100%; 
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.stretched-link {
+    transition: color 0.3s; 
+}
+
+.stretched-link:hover {
+    color: #0056b3; 
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translate3d(0, 40px, 0);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+.animate__fadeInUp {
+    animation-name: fadeInUp;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    transition: transform .3s ease-in-out, box-shadow .3s ease-in-out;
+    box-shadow: 0 12px 24px rgba(0,0,0,.1);
+}
+
+
+.list-inline-item a {
+    color: #007bff;
+    transition: color .2s ease-in-out;
+}
+
+.list-inline-item a:hover {
+    color: #0056b3;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+h1, h2 {
+    color: #007bff; 
+}
+
+p {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.lead {
+    font-size: 1.2rem;
+    color: #666; 
+}
+
+.jumbotron {
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.fa-video, .fa-newspaper, .fa-heart {
+    color: #0056b3;
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #5a6268;
+    border-color: #545b62;
 }

@@ -11,3 +11,17 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Example: add class to navbar on scroll
+    window.onscroll = function() {
+        var top = window.scrollY;
+        var navbar = document.querySelector('.navbar');
+        if (top > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    };
+});
