@@ -205,8 +205,69 @@ def handle_contact_form():
     flash('Thank you for your message, we will be in touch soon!', 'success')
     return redirect(url_for('contact'))
 
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    try:
+        if request.method == "GET":
+            return render_template('forgot_password.html')
+        elif request.method =="POST":
+            email  = request.form['email']
+            print("received post request")
+    
+            api = "https://9l5xftepoj.execute-api.us-east-1.amazonaws.com/OTP/otp_verification"
+            data = {
+                "path": "generate_otp",
+                "userIdentifier": email
+            }
+
+            response = requests.post(url=api, json=data)
+            data = response.json()
+            print(data)
+
+            return render_template('reset_password.html', email=email)
+    except Exception as e:
+        print(e)
+
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    try:
+        if request.method == "GET":
+            return render_template('reset_password.html')
+        else:
+            email  = request.form['email']
+            otp  = request.form['otp']
+    
+            api = "https://9l5xftepoj.execute-api.us-east-1.amazonaws.com/OTP/otp_verification"
+    
+            data = {
+                "path": "verify_otp",
+                "userIdentifier": email,
+                "otp": otp,
+            }
+            response = requests.post(url=api, json=data)
+            data = response.json()
+            if data['verification']:
+                pass
+                new_password = request.form['new_password']
+                user = User.query.filter_by(username=email).first()
+                if user:
+                    user.password = generate_password_hash(new_password)
+                    db.session.commit()
+                    print("password changed")
+                    login_user(user)
+                    return redirect(url_for('login'))
+
+            return redirect(url_for('login'))
+    except Exception as e:
+        print(e)
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create the tables
     app.run(debug=True)
+
+
 
