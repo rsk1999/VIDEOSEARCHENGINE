@@ -1,5 +1,40 @@
+# Virtual Environment
 /venv
-/__pycache__
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment Variables (IMPORTANT: Keep sensitive data out of version control)
+.env
+.env.local
+
+# Database Files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+instance/
+!instance/.gitkeep
+
+# Lambda
 /lambda_lib
 *.zip
+
+# Old Files
 requirements-old.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

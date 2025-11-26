@@ -1,31 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Articles on {{ keyword }}{% endblock %}
+{% block title %}Articles - {{ keyword }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h1 class="text-center mb-4">Articles on '{{ keyword }}'</h1>
-    <form method="POST" class="input-group mb-4">
-        <input type="text" class="form-control" placeholder="Enter a keyword..." name="keyword" value="{{ keyword }}" required>
-        <button class="btn btn-outline-primary" type="submit">Search</button>
+<div class="container mt-4">
+    <h1 class="text-center mb-4 hero-title" style="font-size: 2.5rem;">Search Articles</h1>
+    <form method="POST" class="quick-save-form mb-5">
+        <div class="url-input-group">
+            <input type="text" class="url-input" placeholder="Search news articles..." name="keyword"
+                value="{{ keyword }}" required>
+            <button class="save-btn" type="submit"><i class="fas fa-newspaper"></i> Search</button>
+        </div>
     </form>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="video-grid">
         {% if articles %}
-            {% for article in articles %}
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ article.title }}</h5>
-                            <p class="card-text">{{ article.description | truncate(150) }}</p>
-                            <a href="{{ article.url }}" class="btn btn-primary stretched-link" target="_blank">Read More</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12">
-                <p class="alert alert-info">No articles found for '{{ keyword }}'.</p>
+        {% for article in articles %}
+        <div class="video-card">
+            {% if article.urlToImage %}
+            <div class="video-thumbnail">
+                <img src="{{ article.urlToImage }}" alt="{{ article.title }}">
             </div>
+            {% endif %}
+            <div class="video-info">
+                <h5 class="video-title">{{ article.title }}</h5>
+                <p class="video-meta">{{ article.description | truncate(100) }}</p>
+                <div class="video-actions">
+                    <a href="{{ article.url }}" class="action-btn" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Read More
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        {% if keyword %}
+        <div class="col-12 text-center">
+            <p class="text-secondary">No articles found for '{{ keyword }}'.</p>
+        </div>
+        {% endif %}
         {% endif %}
     </div>
 </div>

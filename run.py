@@ -2,23 +2,27 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, f
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import current_user
-from datetime import timedelta
+from flask_migrate import Migrate
+from datetime import timedelta, datetime
 import os
 import requests
 import json
+from dotenv import load_dotenv
+from video_parser import VideoParser
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///youtube_videos.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', 'sqlite:///youtube_videos.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key_here'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-default-secret-key-change-this')
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)  # Add Flask-Migrate support
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-
-# Initialize login_manager with the Flask app instance
 
 
 @login_manager.user_loader
@@ -40,12 +44,16 @@ class User(UserMixin, db.Model):
 
 class Video(db.Model):
     __tablename__ = 'video'
-    __table_args__ = {'extend_existing': True}  # Proper placement
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     url = db.Column(db.String(512), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    thumbnail = db.Column(db.String(512), nullable=True)  # NEW: Video thumbnail URL
+    platform = db.Column(db.String(50), nullable=True)    # NEW: Platform name (YouTube, Vimeo, etc.)
+    duration = db.Column(db.Integer, default=0)           # NEW: Duration in seconds
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # NEW: When saved
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('videos', lazy=True))
 
@@ -132,12 +140,60 @@ def articles():
         article_params = {
             'q': keyword,
             'language': 'en',
-            'apiKey': "8f0325dacffe46a392f6aaebc202522c"  # Use your NewsAPI key
+            'apiKey': os.getenv('NEWS_API_KEY')  # Load from environment variable
         }
         article_response = requests.get(article_api, params=article_params)
         articles = article_response.json().get('articles', [])
 
     return render_template('articles.html', articles=articles, keyword=keyword)
+
+@app.route('/save_from_url', methods=['POST'])
+@login_required
+def save_from_url():
+    """Save a video from a direct URL (multi-platform support)"""
+    url = request.form.get('video_url', '').strip()
+    
+    if not url:
+        flash('Please provide a video URL', 'error')
+        return redirect(url_for('home'))
+    
+    # Validate URL
+    if not VideoParser.is_valid_video_url(url):
+        flash('Please provide a valid video URL from supported platforms (YouTube, Vimeo, Dailymotion, TikTok, etc.)', 'error')
+        return redirect(url_for('home'))
+    
+    # Check if already saved
+    existing_video = Video.query.filter_by(url=url, user_id=current_user.id).first()
+    if existing_video:
+        flash('You have already saved this video!', 'info')
+        return redirect(url_for('saved_videos'))
+    
+    # Extract metadata
+    try:
+        metadata = VideoParser.extract_metadata(url)
+        
+        # Save to database
+        video = Video(
+            title=metadata['title'],
+            url=url,
+            description=metadata.get('description', ''),
+            thumbnail=metadata.get('thumbnail'),
+            platform=metadata.get('platform', 'Unknown'),
+            duration=metadata.get('duration', 0),
+            user_id=current_user.id
+        )
+        
+        db.session.add(video)
+        db.session.commit()
+        
+        platform_name = metadata.get('platform', 'Unknown Platform')
+        flash(f'✓ Video saved from {platform_name}!', 'success')
+        return redirect(url_for('saved_videos'))
+        
+    except Exception as e:
+        app.logger.error(f'Error saving video: {str(e)}')
+        flash('Error processing video. Please try again or check the URL.', 'error')
+        return redirect(url_for('home'))
 
 @app.route('/')
 def home():

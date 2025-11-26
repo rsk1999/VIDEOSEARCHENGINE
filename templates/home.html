@@ -1,36 +1,59 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}VIDVAULT - Save Videos from Anywhere{% endblock %}
 
 {% block content %}
-<div class="jumbotron bg-light border rounded-3 p-5 mt-3">
-    <h1 class="display-4">Welcome to MySite!</h1>
-    <p class="lead">The ultimate destination for exploring YouTube videos and insightful articles all in one place.</p>
-    <hr class="my-4">
-    <p>Start your journey by searching for trending videos or dive into articles on topics you love. Discover, save, and enjoy content tailored just for you.</p>
-    <a class="btn btn-primary btn-lg" href="/search" role="button">Start Searching</a>
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Your Universal Video Library</h1>
+        <p class="hero-subtitle">Save videos from YouTube, Dailymotion, Vimeo, TikTok, and more - all in one place.</p>
 
+        <!-- Quick Save Form -->
+        <form action="{{ url_for('save_from_url') }}" method="POST"
+            class="quick-save-form animate__animated animate__fadeInUp">
+            <div class="url-input-group">
+                <input type="url" name="video_url" class="url-input"
+                    placeholder="Paste any video URL here (YouTube, Vimeo, TikTok...)" required autocomplete="off">
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-bookmark"></i> Save Video
+                </button>
+            </div>
+        </form>
+
+        <!-- Supported Platforms -->
+        <div class="supported-platforms animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+            <div class="platform-icons">
+                <span class="platform-badge"><i class="fab fa-youtube"></i> YouTube</span>
+                <span class="platform-badge"><i class="fas fa-video"></i> Dailymotion</span>
+                <span class="platform-badge"><i class="fab fa-vimeo"></i> Vimeo</span>
+                <span class="platform-badge"><i class="fab fa-tiktok"></i> TikTok</span>
+                <span class="platform-badge"><i class="fab fa-twitch"></i> Twitch</span>
+                <span class="platform-badge"><i class="fab fa-facebook"></i> Facebook</span>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="container">
-    <div class="row text-center my-5">
-        <div class="col-md-4 mb-3">
-            <i class="fas fa-video fa-3x"></i>
-            <h2 class="my-3">Videos</h2>
-            <p>Explore a wide range of videos. From music to educational content, find and save your favorites.</p>
-            <p><a class="btn btn-secondary" href="/search_videos" role="button">View Videos &raquo;</a></p>
-        </div>
-        <div class="col-md-4 mb-3">
-            <i class="fas fa-newspaper fa-3x"></i>
-            <h2 class="my-3">Articles</h2>
-            <p>Read the latest articles on various topics. Stay informed and enlightened with quality content.</p>
-            <p><a class="btn btn-secondary" href="/articles" role="button">Read Articles &raquo;</a></p>
-        </div>
-        <div class="col-md-4 mb-3">
-            <i class="fas fa-heart fa-3x"></i>
-            <h2 class="my-3">Favorites</h2>
-            <p>Save the content you love. Access your personalized list of videos and articles anytime, anywhere.</p>
-            <p><a class="btn btn-secondary" href="/saved_videos" role="button">Your Favorites &raquo;</a></p>
-        </div>
+<!-- Features Section -->
+<div class="features-grid">
+    <div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <i class="fas fa-globe feature-icon"></i>
+        <h3>Multi-Platform</h3>
+        <p>Save videos from 1000+ supported sites with a single click.</p>
+    </div>
+    <div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+        <i class="fas fa-folder-open feature-icon"></i>
+        <h3>Organize</h3>
+        <p>Keep your favorite content organized in one beautiful library.</p>
+    </div>
+    <div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
+        <i class="fas fa-search feature-icon"></i>
+        <h3>Discover</h3>
+        <p>Search for new videos or find what you've saved instantly.</p>
+    </div>
+    <div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
+        <i class="fas fa-mobile-alt feature-icon"></i>
+        <h3>Access Anywhere</h3>
+        <p>Your personal video cloud, accessible from any device.</p>
     </div>
 </div>
 {% endblock %}
